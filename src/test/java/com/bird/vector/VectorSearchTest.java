@@ -28,19 +28,17 @@ public class VectorSearchTest {
     private static String embeddingModelDir = "data/bgemodel/bge-base-zh-v1.5/";
     private static Embedding embedding = new Embedding(embeddingModelDir, false);
 
-    private static String pqModelDir = "data/pqmodel/";
-    private static String searchModelDir = "data/index/";
+//    private static String pqModelDir = "data/pqmodel/";
 
     /**
      * 创建索引并存储
      */
     /**
      * @param dataPath  文件路径
-     * @param indexPath 索引路径
+     * @param indexDir 索引路径
      * @param fileType  文件类型 csv  xlsx
      */
-    public static void createIndexAndStore(String dataPath, String indexPath, String fileType) {
-
+    public static void createIndexAndStore(String dataPath, String indexDir, String fileType) {
         Pair<List<Integer>, List<String>> docs = null;
         switch (fileType) {
             case "csv":
@@ -56,6 +54,7 @@ public class VectorSearchTest {
 
         List<float[]> vectors = embedding(docs);
 
+        String pqModelDir = indexDir + "pqmodel";
         EmPQ pq = new EmPQ(pqSegmentCount, clusterCount, maxIterCount, vectorDimention);
         pq.train(vectors);
         pq.store(pqModelDir);
@@ -64,19 +63,22 @@ public class VectorSearchTest {
         VectorSearch vectorSearch = new VectorSearch(emIndex, embedding);
         vectorSearch.addTexts(docs);
 
-        vectorSearch.store(indexPath);
+        String vectorDir = indexDir + "index";
+        vectorSearch.store(vectorDir);
     }
 
     /**
      * 加载索引并访问
      */
-    public static void loadIndexAndSearch(String indexPath) {
+    public static void loadIndexAndSearch(String indexDir) {
         EmPQ pq = new EmPQ(pqSegmentCount, clusterCount, maxIterCount, vectorDimention);
+        String pqModelDir = indexDir + "pqmodel";
         pq.load(pqModelDir);
 
+        String vectorDir = indexDir + "index";
         EmIndex emIndex = new EmIndex(pq);
         VectorSearch vectorSearch = new VectorSearch(emIndex, embedding);
-        vectorSearch.load(indexPath);
+        vectorSearch.load(vectorDir);
 
         String query = "高精度光纤大气光学湍流强度与结构测量系统";
         List<Pair<Integer, Pair<Float, List<String>>>> recallDocs = vectorSearch.searchText(query, clusterTopn, topn);
@@ -125,14 +127,14 @@ public class VectorSearchTest {
 
     public static void main(String[] args) {
         String dataPath = "data/achievement/data.xlsx";
-        String indexDir = "data/achievement/index/";
+        String indexDir = "data/achievement/";
         String fileType = "xlsx";
-        createIndexAndStore(dataPath, indexDir, fileType);
-        loadIndexAndSearch(indexDir);
-
-//        dataPath = "data/patent/data.xlsx";
-//        indexDir = "data/patent/index/";
 //        createIndexAndStore(dataPath, indexDir, fileType);
 //        loadIndexAndSearch(indexDir);
+
+        dataPath = "data/patent/data.xlsx";
+        indexDir = "data/patent/";
+        createIndexAndStore(dataPath, indexDir, fileType);
+        loadIndexAndSearch(indexDir);
     }
 }

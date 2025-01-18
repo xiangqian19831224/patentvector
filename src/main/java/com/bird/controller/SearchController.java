@@ -39,9 +39,9 @@ public class SearchController {
     @Qualifier("achVectorSearch")
     private VectorSearch achVectorSearch;
 
-//    @Autowired
-//    @Qualifier("patVectorSearch")
-//    private VectorSearch patVectorSearch;
+    @Autowired
+    @Qualifier("patVectorSearch")
+    private VectorSearch patVectorSearch;
 
     @ApiOperationSupport(order = 1)
     @ApiImplicitParams({
@@ -91,54 +91,54 @@ public class SearchController {
         return jsonObject;
     }
 
-//
-//    @ApiOperationSupport(order = 2)
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "requestId", value = "请求id", defaultValue = "12345678"),
-//            @ApiImplicitParam(name = "userId", value = "用户标识", defaultValue = "12345678"),
-//            @ApiImplicitParam(name = "query", value = "搜索词汇", required = true),
-//            @ApiImplicitParam(name = "clusterTopn", value = "聚类数", required = false),
-//            @ApiImplicitParam(name = "topn", value = "搜索结果数", required = true),
-//    })
-//    @ApiOperation(value = "全量搜索")
-//    @RequestMapping(value = "/patent/search", method = RequestMethod.GET)
-//    public JSONObject patsearch(
-//            @RequestParam(value = "requestId", defaultValue = "111", required = false) String requestId,
-//            @RequestParam(value = "userId", defaultValue = "222", required = false) int userId,
-//            @RequestParam(value = "query", defaultValue = "", required = true) String query,
-//            @RequestParam(value = "clusterTopn", defaultValue = "3", required = false) int clusterTopn,
-//            @RequestParam(value = "topn", defaultValue = "10", required = true) int topn
-//    ) {
-//        JSONObject jsonObject = new JSONObject(true);
-//
-//        long start = System.currentTimeMillis();
-//        List<Pair<Integer, Pair<Float, List<String>>>> result = patVectorSearch.searchText(query, clusterTopn, topn);
-//        long end = System.currentTimeMillis();
-//        long took = end - start;
-//
-//        JSONArray jsonArray = new JSONArray();
-//        result.forEach(doc -> {
-//            int id = doc.getKey();
-//            Pair<Float, List<String>> simTexts = doc.getValue();
-//            float sim = simTexts.getKey();
-//            //该场景每个文档只有一个
-//            String text = simTexts.getValue().get(0);
-//
-//            JSONObject docObj = new JSONObject(true);
-//            docObj.put("id", id);
-//            docObj.put("similary", sim);
-//            parsePatFields(text, docObj);
-//
-//            jsonArray.add(docObj);
-//        });
-//
-//        jsonObject.put("query", query);
-//        jsonObject.put("took", took);
-//        jsonObject.put("count", jsonArray.size());
-//        jsonObject.put("patents", jsonArray);
-//
-//        return jsonObject;
-//    }
+
+    @ApiOperationSupport(order = 2)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "requestId", value = "请求id", defaultValue = "12345678"),
+            @ApiImplicitParam(name = "userId", value = "用户标识", defaultValue = "12345678"),
+            @ApiImplicitParam(name = "query", value = "搜索词汇", required = true),
+            @ApiImplicitParam(name = "clusterTopn", value = "聚类数", required = false),
+            @ApiImplicitParam(name = "topn", value = "搜索结果数", required = true),
+    })
+    @ApiOperation(value = "全量搜索")
+    @RequestMapping(value = "/patent/search", method = RequestMethod.GET)
+    public JSONObject patsearch(
+            @RequestParam(value = "requestId", defaultValue = "111", required = false) String requestId,
+            @RequestParam(value = "userId", defaultValue = "222", required = false) int userId,
+            @RequestParam(value = "query", defaultValue = "", required = true) String query,
+            @RequestParam(value = "clusterTopn", defaultValue = "3", required = false) int clusterTopn,
+            @RequestParam(value = "topn", defaultValue = "10", required = true) int topn
+    ) {
+        JSONObject jsonObject = new JSONObject(true);
+
+        long start = System.currentTimeMillis();
+        List<Pair<Integer, Pair<Float, List<String>>>> result = patVectorSearch.searchText(query, clusterTopn, topn);
+        long end = System.currentTimeMillis();
+        long took = end - start;
+
+        JSONArray jsonArray = new JSONArray();
+        result.forEach(doc -> {
+            int id = doc.getKey();
+            Pair<Float, List<String>> simTexts = doc.getValue();
+            float sim = simTexts.getKey();
+            //该场景每个文档只有一个
+            String text = simTexts.getValue().get(0);
+
+            JSONObject docObj = new JSONObject(true);
+            docObj.put("id", id);
+            docObj.put("similary", sim);
+            parsePatFields(text, docObj);
+
+            jsonArray.add(docObj);
+        });
+
+        jsonObject.put("query", query);
+        jsonObject.put("took", took);
+        jsonObject.put("count", jsonArray.size());
+        jsonObject.put("patents", jsonArray);
+
+        return jsonObject;
+    }
 
     private void parseAchFields(String text, JSONObject docObj) {
         String[] fieldNames = configBean.getAchFieldNames().split(Separators.COMMA);
