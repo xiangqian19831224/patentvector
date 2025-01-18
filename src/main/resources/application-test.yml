@@ -1,0 +1,30 @@
+env: test
+
+#本地开发
+server:
+  port: 8086
+  servlet:
+    context-path:
+  tomcat:
+    # 当所有线程都在使用时,建立连接的请求的等待队列长度,默认100
+    accept-count: 500
+    # 线程池维持最小线程数,默认10
+    min-spare-threads: 10
+    # 允许最大连接数,默认10000,当达到临界值时,系统可能会基于accept-count继续接受连接
+    max-connections: 1024
+    # 最大线程数,默认200
+    max-threads: 2000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      base-path: ${server.servlet.context-path}/actuator
+  endpoint:
+    health:
+      show-details: always
+
+  metrics:
+    tags:
+      application: ${spring.application.name}

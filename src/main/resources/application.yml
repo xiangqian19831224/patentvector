@@ -1,0 +1,17 @@
+#基础配置，不要修改
+spring:
+  application:
+    name: bird-service-demo
+  profiles:
+    active: test
+
+myconf:
+  embeddingModelDir: data/bgemodel/bge-base-zh-v1.5/
+  achDataDir: data/achievement/
+  achFieldNames: 成果名称,所属单位,所在地,技术领域,应用领域,知识产权,技术成熟度,合作方式,联系人,联系电话,邮箱,成果简介
+  patDataDir: data/patent/
+  patFieldNames: 战略性新兴产业,战略性新兴产业一级,战略性新兴产业二级,院属单位,公开号,申请号,申请日,专利类型,专利标题,摘要,联系人,联系方式
+
+logging:
+  config: classpath:logback.xml
+
