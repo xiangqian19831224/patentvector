@@ -28,15 +28,13 @@ public class VectorSearchTest {
     private static String embeddingModelDir = "data/bgemodel/bge-base-zh-v1.5/";
     private static Embedding embedding = new Embedding(embeddingModelDir, false);
 
-//    private static String pqModelDir = "data/pqmodel/";
-
     /**
      * 创建索引并存储
      */
     /**
-     * @param dataPath  文件路径
+     * @param dataPath 文件路径
      * @param indexDir 索引路径
-     * @param fileType  文件类型 csv  xlsx
+     * @param fileType 文件类型 csv  xlsx
      */
     public static void createIndexAndStore(String dataPath, String indexDir, String fileType) {
         Pair<List<Integer>, List<String>> docs = null;
@@ -52,16 +50,19 @@ public class VectorSearchTest {
                 break;
         }
 
+        log.info("开始嵌入与pg训练...");
         List<float[]> vectors = embedding(docs);
-
         String pqModelDir = indexDir + "pqmodel";
         EmPQ pq = new EmPQ(pqSegmentCount, clusterCount, maxIterCount, vectorDimention);
         pq.train(vectors);
         pq.store(pqModelDir);
+        log.info("嵌入与pq训练完成.");
 
+        log.info("开始嵌入与索引...");
         EmIndex emIndex = new EmIndex(pq);
         VectorSearch vectorSearch = new VectorSearch(emIndex, embedding);
         vectorSearch.addTexts(docs);
+        log.info("嵌入与索引完成.");
 
         String vectorDir = indexDir + "index";
         vectorSearch.store(vectorDir);
@@ -90,6 +91,7 @@ public class VectorSearchTest {
         List<float[]> vectors = Collections.synchronizedList(new ArrayList<>(docs.getKey().size()));
         log.info("开始向量化....");
         long start = System.currentTimeMillis();
+        float totalCount = docs.getKey().size() + 0.0f;
         docs.getRight().parallelStream().forEach(content -> {
             float[] vector = new float[0];
             try {
@@ -98,6 +100,11 @@ public class VectorSearchTest {
                 e.printStackTrace();
             }
             vectors.add(vector);
+
+            int curCount = vectors.size();
+            if (curCount % 1000 == 0) {
+                log.info("文档总数：{}  当前文档数:{} 向量进度: {}", totalCount, curCount, curCount / totalCount);
+            }
         });
         log.info("嵌入文档数：{} 嵌入耗时：{}ms", vectors.size(), (System.currentTimeMillis() - start));
         return vectors;
@@ -129,8 +136,8 @@ public class VectorSearchTest {
         String dataPath = "data/achievement/data.xlsx";
         String indexDir = "data/achievement/";
         String fileType = "xlsx";
-//        createIndexAndStore(dataPath, indexDir, fileType);
-//        loadIndexAndSearch(indexDir);
+        createIndexAndStore(dataPath, indexDir, fileType);
+        loadIndexAndSearch(indexDir);
 
         dataPath = "data/patent/data.xlsx";
         indexDir = "data/patent/";

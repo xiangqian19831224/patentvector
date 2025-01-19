@@ -55,12 +55,12 @@ public class MyBeans {
         Embedding embedding = new Embedding(configBean.getEmbeddingModelDir(), false);
         EmPQ pq = new EmPQ(pqSegmentCount, clusterCount, maxIterCount, vectorDimention);
 
-        String pgPath = configBean.getAchDataDir() + PGMODEL_DIR;
+        String pgPath = configBean.getPatDataDir() + PGMODEL_DIR;
         pq.load(pgPath);
 
         EmIndex emIndex = new EmIndex(pq);
         VectorSearch vectorSearch = new VectorSearch(emIndex, embedding);
-        String achIndexPath = configBean.getAchDataDir() + INDEX_DIR;
+        String achIndexPath = configBean.getPatDataDir() + INDEX_DIR;
         vectorSearch.load(achIndexPath);
 
         return vectorSearch;

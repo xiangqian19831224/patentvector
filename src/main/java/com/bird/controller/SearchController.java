@@ -47,11 +47,11 @@ public class SearchController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "requestId", value = "请求id", defaultValue = "12345678"),
             @ApiImplicitParam(name = "userId", value = "用户标识", defaultValue = "12345678"),
-            @ApiImplicitParam(name = "query", value = "搜索词汇", required = true),
-            @ApiImplicitParam(name = "clusterTopn", value = "聚类数", required = false),
-            @ApiImplicitParam(name = "topn", value = "搜索结果数", required = true),
+            @ApiImplicitParam(name = "query", value = "搜索词汇", defaultValue = "创新", required = true),
+            @ApiImplicitParam(name = "clusterTopn", value = "聚类数", defaultValue = "8", required = false),
+            @ApiImplicitParam(name = "topn", value = "搜索结果数", defaultValue = "10", required = true),
     })
-    @ApiOperation(value = "全量搜索")
+    @ApiOperation(value = "成果搜索")
     @RequestMapping(value = "/achievement/search", method = RequestMethod.GET)
     public JSONObject achsearch(
             @RequestParam(value = "requestId", defaultValue = "111", required = false) String requestId,
@@ -86,6 +86,7 @@ public class SearchController {
         jsonObject.put("query", query);
         jsonObject.put("took", took);
         jsonObject.put("count", jsonArray.size());
+        jsonObject.put("clusterCount", achVectorSearch.getEmIndex().getPq().getClusterCount());
         jsonObject.put("patents", jsonArray);
 
         return jsonObject;
@@ -96,11 +97,11 @@ public class SearchController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "requestId", value = "请求id", defaultValue = "12345678"),
             @ApiImplicitParam(name = "userId", value = "用户标识", defaultValue = "12345678"),
-            @ApiImplicitParam(name = "query", value = "搜索词汇", required = true),
-            @ApiImplicitParam(name = "clusterTopn", value = "聚类数", required = false),
-            @ApiImplicitParam(name = "topn", value = "搜索结果数", required = true),
+            @ApiImplicitParam(name = "query", value = "搜索词汇", defaultValue = "创新", required = true),
+            @ApiImplicitParam(name = "clusterTopn", value = "聚类数", defaultValue = "8", required = false),
+            @ApiImplicitParam(name = "topn", value = "搜索结果数", defaultValue = "10", required = true),
     })
-    @ApiOperation(value = "全量搜索")
+    @ApiOperation(value = "专利搜索")
     @RequestMapping(value = "/patent/search", method = RequestMethod.GET)
     public JSONObject patsearch(
             @RequestParam(value = "requestId", defaultValue = "111", required = false) String requestId,
@@ -135,6 +136,7 @@ public class SearchController {
         jsonObject.put("query", query);
         jsonObject.put("took", took);
         jsonObject.put("count", jsonArray.size());
+        jsonObject.put("clusterCount", patVectorSearch.getEmIndex().getPq().getClusterCount());
         jsonObject.put("patents", jsonArray);
 
         return jsonObject;

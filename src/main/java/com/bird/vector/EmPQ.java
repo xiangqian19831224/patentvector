@@ -183,6 +183,9 @@ public class EmPQ {
     public List<List<Pair<Integer, Float>>> search(float[] vector, int topn) {
         assert vector.length == vectorDimension;
         assert topn > 0;
+        if (topn > clusterCount) {
+            topn = clusterCount;
+        }
 
         List<List<Pair<Integer, Float>>> segDisListList = new ArrayList<>(pqSegmentCount);
         int pgSegmentLength = vectorDimension / pqSegmentCount;

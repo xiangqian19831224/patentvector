@@ -3,6 +3,7 @@ package com.bird.vector;
 import ai.onnxruntime.OrtException;
 import com.bird.vector.common.TextTools;
 import com.bird.vector.utils.FolderTools;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -23,6 +24,7 @@ import java.util.Map;
  * @date： 2024/10/25
  */
 @Slf4j
+@Data
 public class VectorSearch {
     /**
      * IVT_PARENT_DIR： 索引父目录
@@ -83,11 +85,15 @@ public class VectorSearch {
     public void addTexts(Pair<List<Integer>, List<String>> idsToTextsPair) {
         List<Integer> ids = idsToTextsPair.getKey();
         List<String> texts = idsToTextsPair.getValue();
+
+        int totalTextCount = texts.size();
         for (int i = 0; i < ids.size(); i++) {
             int id = ids.get(i);
             String text = texts.get(i);
             try {
-
+                if (i % 1000 == 0) {
+                    log.info("总文本量:{} 当前处理文本数:{} 索引进度:{} ", totalTextCount, i, (i + 0.0f) / totalTextCount);
+                }
                 addText(id, text);
             } catch (OrtException e) {
                 e.printStackTrace();
